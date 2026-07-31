@@ -1,184 +1,321 @@
-const player=document.getElementById("player");
-const crystal=document.getElementById("crystal");
-const enemy=document.getElementById("enemy");
+// Elements
+const player = document.getElementById("player");
+const crystal = document.getElementById("crystal");
+const enemy = document.getElementById("enemy");
 
-const game=document.getElementById("gameArea");
+const game = document.getElementById("gameArea");
 
-const scoreDisplay=document.getElementById("score");
-const timerDisplay=document.getElementById("timer");
+const scoreDisplay = document.getElementById("score");
+const timerDisplay = document.getElementById("timer");
 
-const message=document.getElementById("message");
+const message = document.getElementById("message");
 
-const startBtn=document.getElementById("startBtn");
-const restartBtn=document.getElementById("restartBtn");
+const startBtn = document.getElementById("startBtn");
+const restartBtn = document.getElementById("restartBtn");
 
-let x=20;
-let y=20;
-
-let enemyX=650;
-
-let score=0;
-let time=60;
-
+// Game State
+let score = 0;
+let time = 60;
 let timer;
+let playing = false;
 
-let playing=false;
+// Player
+let playerX = 20;
+let playerY = 20;
+const playerSpeed = 5;
 
-startBtn.onclick=startGame;
+// Enemy
+let enemyX = 650;
+let enemyY = 300;
+let enemySpeedX = -1.6;
+let enemySpeedY = 1.2;
 
-restartBtn.onclick=restartGame;
+// Keyboard
+const keys = {};
 
-function startGame(){
+// -----------------------------
+// Buttons
+// -----------------------------
 
-game.style.display="block";
+startBtn.onclick = startGame;
+restartBtn.onclick = restartGame;
 
-startBtn.style.display="none";
+// -----------------------------
+// Keyboard Input
+// -----------------------------
 
-restartBtn.style.display="none";
+document.addEventListener("keydown", (e) => {
+    keys[e.key.toLowerCase()] = true;
+});
 
-message.innerHTML="";
+document.addEventListener("keyup", (e) => {
+    keys[e.key.toLowerCase()] = false;
+});
 
-playing=true;
+// -----------------------------
+// Start Game
+// -----------------------------
 
-timer=setInterval(updateTimer,1000);
+function startGame() {
 
-}
+    game.style.display = "block";
 
-function updateTimer(){
+    // Hide instructions
+    document.getElementById("instructions").style.display = "none";
 
-time--;
+    startBtn.style.display = "none";
 
-timerDisplay.innerHTML=time;
+    restartBtn.style.display = "none";
 
-if(time<=0){
+    message.innerHTML = "";
 
-loseGame();
+    playing = true;
 
-}
-
-}
-
-document.addEventListener("keydown",movePlayer);
-
-function movePlayer(e){
-
-if(!playing)return;
-
-let speed=15;
-
-if(e.key=="ArrowUp"||e.key=="w")y-=speed;
-
-if(e.key=="ArrowDown"||e.key=="s")y+=speed;
-
-if(e.key=="ArrowLeft"||e.key=="a")x-=speed;
-
-if(e.key=="ArrowRight"||e.key=="d")x+=speed;
-
-if(x<0)x=0;
-if(y<0)y=0;
-
-if(x>760)x=760;
-if(y>460)y=460;
-
-player.style.left=x+"px";
-player.style.top=y+"px";
-
-checkCrystal();
-
-checkEnemy();
+    timer = setInterval(updateTimer, 1000);
 
 }
 
-function checkCrystal(){
+// -----------------------------
+// Timer
+// -----------------------------
 
-let px=x;
-let py=y;
+function updateTimer() {
 
-let cx=crystal.offsetLeft;
-let cy=crystal.offsetTop;
+    time--;
 
-if(Math.abs(px-cx)<30&&Math.abs(py-cy)<30){
+    timerDisplay.textContent = time;
 
-score++;
+    if (time <= 0) {
 
-scoreDisplay.innerHTML=score;
+        loseGame();
 
-moveCrystal();
-
-if(score>=10){
-
-winGame();
+    }
 
 }
 
-}
+// -----------------------------
+// Game Loop
+// -----------------------------
+
+function gameLoop() {
+
+    if (playing) {
+
+        updatePlayer();
+
+        updateEnemy();
+
+        checkCrystal();
+
+        checkEnemyCollision();
+
+    }
+
+    requestAnimationFrame(gameLoop);
 
 }
 
-function moveCrystal(){
+requestAnimationFrame(gameLoop);
 
-let newX=Math.random()*730;
+// -----------------------------
+// Player Movement
+// -----------------------------
 
-let newY=Math.random()*430;
+function updatePlayer() {
 
-crystal.style.left=newX+"px";
-crystal.style.top=newY+"px";
+    let dx = 0;
+    let dy = 0;
+
+    if (keys["arrowup"] || keys["w"]) dy--;
+    if (keys["arrowdown"] || keys["s"]) dy++;
+    if (keys["arrowleft"] || keys["a"]) dx--;
+    if (keys["arrowright"] || keys["d"]) dx++;
+
+    if (dx !== 0 || dy !== 0) {
+
+        const length = Math.sqrt(dx * dx + dy * dy);
+
+        dx /= length;
+        dy /= length;
+
+        playerX += dx * playerSpeed;
+        playerY += dy * playerSpeed;
+
+    }
+
+    const maxX = game.clientWidth - player.offsetWidth;
+    const maxY = game.clientHeight - player.offsetHeight;
+
+    playerX = Math.max(0, Math.min(maxX, playerX));
+    playerY = Math.max(0, Math.min(maxY, playerY));
+
+    player.style.left = playerX + "px";
+    player.style.top = playerY + "px";
 
 }
 
-function checkEnemy(){
+// -----------------------------
+// Enemy Movement
+// -----------------------------
 
-enemyX-=2;
+function updateEnemy() {
 
-if(enemyX<0){
+    enemyX += enemySpeedX;
+    enemyY += enemySpeedY;
 
-enemyX=760;
+    const maxX = game.clientWidth - enemy.offsetWidth;
+    const maxY = game.clientHeight - enemy.offsetHeight;
 
-enemy.style.top=Math.random()*430+"px";
+    if (enemyX <= 0 || enemyX >= maxX) {
+
+        enemySpeedX *= -1;
+
+    }
+
+    if (enemyY <= 0 || enemyY >= maxY) {
+
+        enemySpeedY *= -1;
+
+    }
+
+    enemy.style.left = enemyX + "px";
+    enemy.style.top = enemyY + "px";
 
 }
 
-enemy.style.left=enemyX+"px";
+// -----------------------------
+// Crystal Collection
+// -----------------------------
 
-let ex=enemy.offsetLeft;
-let ey=enemy.offsetTop;
+function checkCrystal() {
 
-if(Math.abs(x-ex)<35&&Math.abs(y-ey)<35){
+    const crystalX = crystal.offsetLeft;
+    const crystalY = crystal.offsetTop;
 
-loseGame();
+    if (
+
+    Math.abs(playerX - crystalX) < 40 &&
+    Math.abs(playerY - crystalY) < 40
+
+) {
+
+        score++;
+
+        scoreDisplay.textContent = score;
+
+        moveCrystal();
+
+        if (score >= 10) {
+
+            winGame();
+
+        }
+
+    }
 
 }
 
-requestAnimationFrame(checkEnemy);
+function moveCrystal() {
+
+    const maxX = game.clientWidth - crystal.offsetWidth;
+    const maxY = game.clientHeight - crystal.offsetHeight;
+
+    crystal.style.left = Math.random() * maxX + "px";
+    crystal.style.top = Math.random() * maxY + "px";
 
 }
 
-function winGame(){
+// -----------------------------
+// Enemy Collision
+// -----------------------------
 
-playing=false;
+function checkEnemyCollision() {
 
-clearInterval(timer);
+    if (
+        Math.abs(playerX - enemyX) < 40 &&
+        Math.abs(playerY - enemyY) < 40
+    ) {
+        loseGame();
+    }
 
-message.innerHTML="🎉 You Win!";
+}
 
-restartBtn.style.display="inline-block";
+// -----------------------------
+// Win / Lose
+// -----------------------------
+
+function winGame() {
+
+    playing = false;
+
+    clearInterval(timer);
+
+    // Hide the game sprites
+    player.style.display = "none";
+    enemy.style.display = "none";
+    crystal.style.display = "none";
+
+    message.style.display = "block";
+    message.innerHTML = "<br>MISSION COMPLETE!";
+
+    restartBtn.style.display = "inline-block";
 
 }
 
 function loseGame(){
 
-playing=false;
+    if(!playing) return;
 
-clearInterval(timer);
+    playing = false;
 
-message.innerHTML="💥 Game Over";
+    clearInterval(timer);
 
-restartBtn.style.display="inline-block";
+    message.style.display = "block";
+
+    message.innerHTML = "💥<br>GAME OVER";
+
+    restartBtn.style.display = "inline-block";
 
 }
 
-function restartGame(){
+// -----------------------------
+// Restart
+// -----------------------------
 
-location.reload();
+function restartGame() {
+
+    player.style.display = "block";
+    enemy.style.display = "block";
+    crystal.style.display = "block";
+
+    score = 0;
+    time = 60;
+
+    scoreDisplay.textContent = score;
+    timerDisplay.textContent = time;
+
+    playerX = 20;
+    playerY = 20;
+
+    enemyX = 650;
+    enemyY = 300;
+
+    player.style.left = playerX + "px";
+    player.style.top = playerY + "px";
+
+    enemy.style.left = enemyX + "px";
+    enemy.style.top = enemyY + "px";
+
+    moveCrystal();
+
+    message.innerHTML = "";
+
+    restartBtn.style.display = "none";
+
+    playing = true;
+
+    clearInterval(timer);
+
+    timer = setInterval(updateTimer, 1000);
 
 }

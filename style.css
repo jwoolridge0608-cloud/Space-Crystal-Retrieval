@@ -1,151 +1,410 @@
+/*=========================================
+    Custom Fonts
+=========================================*/
+
+@font-face{
+    font-family: "SpaceNova";
+    src: url("fonts/SpaceNova.otf") format("opentype");
+    font-weight: normal;
+    font-style: normal;
+}
+
+/* ===========================
+   Global Styles
+=========================== */
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
 body{
 
-margin:0;
-font-family:Arial, sans-serif;
-background:#050d2d;
-color:white;
-text-align:center;
+    min-height:100vh;
+
+    font-family:"Exo 2", sans-serif;
+
+    background-image:url("images/galaxy.png");
+    background-size:cover;
+    background-position:center;
+    background-repeat:no-repeat;
+    background-attachment:fixed;
+
+    color:rgb(255, 255, 255);
+
+    text-align:center;
+
+    display:flex;
+    flex-direction:column;
+    align-items:center;
 
 }
+
+/* ===========================
+   Header
+=========================== */
 
 header{
 
-background:#10183f;
-padding:20px;
+    width:100%;
+    background:rgba(16,24,63,.85);
+    backdrop-filter:blur(6px);
+
+    padding:20px;
+
+    border-bottom:2px solid #29d8ff;
 
 }
+
+header h1{
+
+    font-family: "SpaceNova", sans-serif;
+
+    font-size: clamp(3rem, 5vw, 5rem);
+
+    letter-spacing: 2px;
+
+    color: #ffffff;
+
+    text-shadow:
+        2px 2px 0 #001733,
+        0 0 8px #00bfff,
+        0 0 18px #008cff;
+
+    margin-bottom: 10px;
+
+}
+
+/* ===========================
+   Score Bar
+=========================== */
 
 #stats{
 
-display:flex;
-justify-content:center;
-gap:40px;
-font-size:22px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:25px;
+
+    font-family:"Orbitron", sans-serif;
+    font-size:clamp(18px,2vw,24px);
+    font-weight:700;
+
+    color:#7fe8ff;
+
+    text-shadow:0 0 8px #00bfff;
 
 }
+
+/* ===========================
+   Instructions
+=========================== */
 
 #instructions{
 
-margin:20px;
+    font-family:"Exo 2", sans-serif;
+
+    font-size:1.15rem;
+
+    line-height:1.7;
 
 }
 
+#instructions h2{
+
+    font-family:"Rajdhani", sans-serif;
+
+    font-size:clamp(2rem,3vw,2.6rem);
+
+    letter-spacing:2px;
+
+    color:#61d7ff;
+
+}
+
+#instructions p{
+    margin-bottom:12px;
+}
+
+/* ===========================
+   Buttons
+=========================== */
+
 button{
 
-padding:12px 24px;
-font-size:18px;
-margin:10px;
-cursor:pointer;
-border:none;
-border-radius:8px;
-background:#00bfff;
-color:white;
+    font-family:"Orbitron", sans-serif;
+
+    font-size:18px;
+
+    letter-spacing:1px;
+
+    padding:12px 24px;
+
+    border:none;
+
+    border-radius:10px;
+
+    cursor:pointer;
+
+    transition:.25s;
 
 }
 
 button:hover{
 
-background:#0095cc;
-
-}
-
-#gameArea{
-
-width:800px;
-height:500px;
-
-margin:20px auto;
-
-position:relative;
-
-background:url("https://images.unsplash.com/photo-1462331940025-496dfbfc7564?auto=format&fit=crop&w=1200&q=80");
-
-background-size:cover;
-
-border:4px solid white;
-
-overflow:hidden;
-
-display:none;
-
-}
-
-#player{
-
-width:40px;
-height:40px;
-
-background:cyan;
-
-position:absolute;
-
-left:20px;
-top:20px;
-
-border-radius:50%;
-
-}
-
-#crystal{
-
-width:30px;
-height:30px;
-
-background:yellow;
-
-position:absolute;
-
-left:300px;
-top:200px;
-
-transform:rotate(45deg);
-
-}
-
-#enemy{
-
-width:40px;
-height:40px;
-
-background:red;
-
-position:absolute;
-
-left:650px;
-top:300px;
-
-border-radius:50%;
-
-}
-
-#message{
-
-font-size:36px;
-font-weight:bold;
-margin:20px;
+    background:#0095cc;
 
 }
 
 #restartBtn{
 
-display:none;
+    position:absolute;
+
+    top:70%;
+
+    left:50%;
+
+    transform:translateX(-50%);
+
+    display:none;
+
+    z-index:101;
+
+    padding:12px 28px;
+
+    font-size:20px;
+
+    border:none;
+
+    border-radius:10px;
+
+    cursor:pointer;
+
+    background:white;
+
+    color:#050d2d;
 
 }
 
-@media(max-width:850px){
+#restartBtn:hover{
+
+    background:#00bfff;
+
+}
+
+/* ===========================
+   Game Area
+=========================== */
 
 #gameArea{
 
-width:95%;
-height:400px;
+    position:relative;
+
+    width:min(95vw,800px);
+
+    aspect-ratio:16/10;
+
+    margin:20px auto;
+
+    overflow:hidden;
+
+    border:4px solid white;
+
+    border-radius:12px;
+
+    background:url("https://images.unsplash.com/photo-1462331940025-496dfbfc7564?auto=format&fit=crop&w=1200&q=80");
+
+    background-size:cover;
+
+    background-position:center;
+
+    display:none;
 
 }
 
-#stats{
+/* ===========================
+   Player
+=========================== */
 
-flex-direction:column;
-gap:10px;
+#player{
+
+    position:absolute;
+
+    width:48px;
+    height:48px;
+
+    left:20px;
+    top:20px;
+
+    background-image:url("sprites/player.png");
+    background-size:contain;
+    background-repeat:no-repeat;
+    background-position:center;
 
 }
+
+/* ===========================
+   Crystal
+=========================== */
+
+#crystal{
+
+    position:absolute;
+
+    width:36px;
+    height:36px;
+
+    background-image:url("sprites/crystal.png");
+    background-size:contain;
+    background-repeat:no-repeat;
+    background-position:center;
+
+}
+
+/* ===========================
+   Enemy
+=========================== */
+
+#enemy{
+
+    position:absolute;
+
+    width:48px;
+    height:48px;
+
+    background-image:url("sprites/enemy.png");
+    background-size:contain;
+    background-repeat:no-repeat;
+    background-position:center;
+
+}
+
+/* ===========================
+   Overlay Message
+=========================== */
+
+.overlayMessage{
+
+    position:absolute;
+
+    top:40%;
+    left:50%;
+
+    transform:translate(-50%, -50%);
+
+    width:100%;
+
+    display:none;
+
+    text-align:center;
+
+    font-family: "SpaceNova", sans-serif;
+
+    font-size:clamp(42px,6vw,72px);
+
+    letter-spacing:4px;
+
+    color:#ffffff;
+
+    text-shadow:
+        0 0 12px #00d9ff,
+        0 0 25px #008cff,
+        4px 4px 6px black;
+
+}
+
+/* ===========================
+   Mobile Layout
+=========================== */
+
+@media (max-width:768px){
+
+    header{
+        padding:15px;
+    }
+
+    #stats{
+
+        flex-direction:column;
+
+        gap:10px;
+
+    }
+
+    #instructions{
+
+        width:95%;
+
+        padding:10px;
+
+    }
+
+    button{
+
+        width:100%;
+
+        max-width:320px;
+
+    }
+
+    #player{
+
+        width:34px;
+        height:34px;
+
+    }
+
+    #enemy{
+
+        width:34px;
+        height:34px;
+
+    }
+
+    #crystal{
+
+        width:26px;
+        height:26px;
+
+    }
+
+}
+
+/* ===========================
+   Small Phones
+=========================== */
+
+@media (max-width:480px){
+
+    header h1{
+
+        font-size:1.8rem;
+
+    }
+
+    #stats{
+
+        font-size:18px;
+
+    }
+
+    #instructions h2{
+
+        font-size:1.4rem;
+
+    }
+
+    #instructions{
+
+        line-height:1.5;
+
+    }
+
+    .overlayMessage{
+
+        font-size:30px;
+
+    }
 
 }
