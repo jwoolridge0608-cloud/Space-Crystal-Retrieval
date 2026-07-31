@@ -205,7 +205,7 @@ function checkCrystal() {
 
         moveCrystal();
 
-        if (score >= 10) {
+        if (score >= 30) {
 
             winGame();
 
